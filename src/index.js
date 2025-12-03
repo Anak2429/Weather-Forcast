@@ -52,4 +52,35 @@ recentSearches.addEventListener("change", () =>{
     }
 });
 
+//-------end of adding EventListener-------------//
 
+// fetchWeatherByCity function // 
+
+async function fetchWeatherByCity(city) {
+    try {
+    // URL for fetching Current Weather //
+    const currentURL = `${CURRENT_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
+    // URL for fetching FOrecast Weather //
+    const forecastURL = `${FORECAST_URL}?q=${encodeURIComponent(ciyt)}&appid=${API_KEY}&units=metric`;
+    
+    const [currentRES , forecastRES] = await Promise.all([
+        fetch(currentURL),
+        fetch(forecastURL),
+    ]);
+    
+    if(!currentRES.ok) throw new Error ("City Not Found ");
+    if(!forecastRES.ok)  throw new Error("Unable to fetch Forecast ");
+    
+    const currentData = await currentRES.json();
+    const forecastData = await forecastRES.json();
+
+    const dailyWeather = getDailyForecast(forecastData);
+    renderWeather(currentData , dailyWeather);
+    addRecentCity(currentData.name);
+    }catch(err){
+        showError(err.message);
+    }
+}
+//---end of fetchWeatherByCity Function----------------//
+
+// fetchWeatherByLocation function //
