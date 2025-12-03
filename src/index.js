@@ -19,3 +19,37 @@ const RECENT_KEY = "recentCities";
 const MAX_RECENT = 5;
 
 
+// adding event listener to the buttons and to the recent drop down
+searchBtn.addEventListener("click", () =>{
+    const city = cityInput.value.trim();
+    if(!city){
+        alert("please enter a City Name ");
+    }
+    fetchWeatherByCity(city);
+});
+
+locationBtn.addEventListener("click",() => {
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported ");
+    }
+    navigator.geolocation.getCurrentPosition(
+    (pos) => {
+        const {latitude , longitude} = pos.coords;
+        fetchWeatherByLoaction( latitude , longitude);
+    },
+    () => {
+        alert("uable to get your loaction");
+    }
+    );    
+});
+
+
+recentSearches.addEventListener("change", () =>{
+    const selectedCity = recentSearches.value;
+    if(selectedCity){
+        cityInput.value =selectedCity;
+        fetchWeatherByCity(selectedCity);
+    }
+});
+
+
