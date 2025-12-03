@@ -84,3 +84,30 @@ async function fetchWeatherByCity(city) {
 //---end of fetchWeatherByCity Function----------------//
 
 // fetchWeatherByLocation function //
+
+async function fetchWeatherByLocation(lat , lon) {
+    try {
+    // URL for fetching Current Weather using coords //
+     const currentUrl = `${CURRENT_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+    // URL for fetching Forecast Weather using Coords //
+    const forecastUrl = `${FORECAST_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+    
+    const [currentRES , forecastRES] = await Promise.all([
+        fetch(currentURL),
+        fetch(forecastURL),
+    ]);
+    
+    if(!currentRES.ok) throw new Error ("unable to fetch weather for your location");
+    if(!forecastRES.ok)  throw new Error("Unable to fetch Forecast ");
+    
+    const currentData = await currentRES.json();
+    const forecastData = await forecastRES.json();
+
+    const dailyWeather = getDailyForecast(forecastData);
+    renderWeather(currentData , dailyWeather);
+    addRecentCity(currentData.name);
+    }catch(err){
+        showError(err.message);
+    }
+}
+//---end of fetchWeatherByLocation Function----------------//
