@@ -113,7 +113,7 @@ async function fetchWeatherByLocation(lat , lon) {
 //---end of fetchWeatherByLocation Function----------------//
 
 
-// getDailyForecast function //
+// getDailyForecast function  to get the five days forecast//
 function getDailyForecast(forecastData){
     const mapByDate = {};
 
@@ -143,4 +143,104 @@ function getDailyForecast(forecastData){
         };
     });
     return daily;
+}
+// extracting the 5 days forecast weather and displaying on the html
+function renderWeather(current, dailyForecasts) {
+  const {
+    name,
+    main: { temp, feels_like, humidity },
+    weather,
+    wind: { speed },
+    sys: { country },
+  } = current;
+
+  const description = weather[0]?.description || "";
+  const icon = weather[0]?.icon || "01d";
+  const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+  // Build forecast cards HTML
+  let forecastHTML = "";
+  if (dailyForecasts && dailyForecasts.length > 0) {
+    forecastHTML = `
+      <div class="mt-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">5-Day Forecast</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          ${dailyForecasts
+            .map((day) => {
+              const dayName = formatDayName(day.date);
+              const shortDate = formatShortDate(day.date);
+              const dayIconUrl = `https://openweathermap.org/img/wn/${day.icon}@2x.png`;
+              return `
+                <div class="bg-gray-100 p-4 rounded-lg text-center">
+                  <p class="text-sm font-medium text-gray-700">${dayName}</p>
+                  <p class="text-xs text-gray-500 mb-2">${shortDate}</p>
+                  <img src="${dayIconUrl}" alt="Forecast Icon" class="w-12 h-12 mx-auto mb-2">
+                  <p class="text-lg font-semibold">${Math.round(
+                    day.temp
+                  )}°C</p>
+                  <p class="text-xs text-gray-600 capitalize mt-1">
+                    ${day.description}
+                  </p>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  resultDiv.innerHTML = `
+    <!-- CURRENT WEATHER MAIN CARD -->
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">${name}, ${country}</h2>
+        <p class="text-gray-500 capitalize">${description}</p>
+      </div>
+      <img src="${iconUrl}" alt="Weather Icon" class="w-20 h-20">
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-gray-100 p-4 rounded-lg text-center">
+        <p class="text-sm text-gray-500">Temperature</p>
+        <p class="text-2xl font-semibold">${Math.round(temp)}°C</p>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded-lg text-center">
+        <p class="text-sm text-gray-500">Feels Like</p>
+        <p class="text-2xl font-semibold">${Math.round(feels_like)}°C</p>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded-lg text-center">
+        <p class="text-sm text-gray-500">Humidity</p>
+        <p class="text-2xl font-semibold">${humidity}%</p>
+      </div>
+
+      <div class="bg-gray-100 p-4 rounded-lg text-center md:col-span-3">
+        <p class="text-sm text-gray-500">Wind Speed</p>
+        <p class="text-2xl font-semibold">${speed} m/s</p>
+      </div>
+    </div>
+
+    ${forecastHTML}
+  `;
+}
+
+// date helping functions for getting the week day and the date and month in short form //
+function formatDayName(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { weekday: "short" }); // Mon, Tue...
+}
+
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+// shwoing error message on ui
+function showError(message) {
+  resultDiv.innerHTML = `
+    <h2 class="text-xl font-semibold text-red-600">Error</h2>
+    <p class="mt-4 text-gray-600">${message}</p>
+  `;
 }
