@@ -111,3 +111,36 @@ async function fetchWeatherByLocation(lat , lon) {
     }
 }
 //---end of fetchWeatherByLocation Function----------------//
+
+
+// getDailyForecast function //
+function getDailyForecast(forecastData){
+    const mapByDate = {};
+
+    forecastData.list.forEach((item) => {
+        const dateStr = item.dt_txt.split(" ")[0];
+        if(!mapByDate[dateStr]){
+            mapByDate[dateStr]= [];
+        }        
+        mapByDate[dateStr].push(item);
+    });
+
+    const todayStr =  new Date().toISOString().split("T")[0];
+    const allDates = Object.keys(mapByDate).filter((d) => d > todayStr).sort();
+
+    const nextFive = allDates.slice(0,5);
+    const daily = nextFive.map((dateStr) => {
+        const items = mapByDate[dateStr];
+
+        let chose = items.find((i) => i.dt_txt.includes("12:00:00")) || items[Math.floor(items.length / 2)];
+
+        return {
+            date : dateStr,
+            temp : chose.main.temp,
+            icon : chose.weather[0].icon,
+            description : chose.weather[0].description,
+
+        };
+    });
+    return daily;
+}
