@@ -173,7 +173,7 @@ function renderWeather(current, dailyForecasts) {
               return `
                 <div class="bg-gray-100 p-4 rounded-lg text-center">
                   <p class="text-sm font-medium text-gray-700">${dayName}</p>
-                  <p class="text-xs text-gray-500 mb-2">${shortDate}</p>
+                  <p class="text-xs text-black mb-2">${shortDate}</p>
                   <img src="${dayIconUrl}" alt="Forecast Icon" class="w-12 h-12 mx-auto mb-2">
                   <p class="text-lg font-semibold">${Math.round(
                     day.temp
@@ -195,29 +195,29 @@ function renderWeather(current, dailyForecasts) {
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-2xl font-bold text-gray-800">${name}, ${country}</h2>
-        <p class="text-gray-500 capitalize">${description}</p>
+        <p class="text-black capitalize">${description}</p>
       </div>
       <img src="${iconUrl}" alt="Weather Icon" class="w-20 h-20">
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-gray-100 p-4 rounded-lg text-center">
-        <p class="text-sm text-gray-500">Temperature</p>
+        <p class="text-sm text-black">Temperature</p>
         <p class="text-2xl font-semibold">${Math.round(temp)}°C</p>
       </div>
 
       <div class="bg-gray-100 p-4 rounded-lg text-center">
-        <p class="text-sm text-gray-500">Feels Like</p>
+        <p class="text-sm text-black">Feels Like</p>
         <p class="text-2xl font-semibold">${Math.round(feels_like)}°C</p>
       </div>
 
       <div class="bg-gray-100 p-4 rounded-lg text-center">
-        <p class="text-sm text-gray-500">Humidity</p>
+        <p class="text-sm text-black">Humidity</p>
         <p class="text-2xl font-semibold">${humidity}%</p>
       </div>
 
       <div class="bg-gray-100 p-4 rounded-lg text-center md:col-span-3">
-        <p class="text-sm text-gray-500">Wind Speed</p>
+        <p class="text-sm text-black">Wind Speed</p>
         <p class="text-2xl font-semibold">${speed} m/s</p>
       </div>
     </div>
@@ -241,7 +241,7 @@ function formatShortDate(dateStr) {
 function showError(message) {
   resultDiv.innerHTML = `
     <h2 class="text-xl font-semibold text-red-600">Error</h2>
-    <p class="mt-4 text-gray-600">${message}</p>
+    <p class="mt-4 text-black">${message}</p>
   `;
 }
 
