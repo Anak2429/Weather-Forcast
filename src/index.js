@@ -1,12 +1,12 @@
 // City input field 
 const cityInput = document.getElementById("cityInput");
 // dropdown 
-const recentSearches = document.getElementById("recentSearches");
+const recentSelect = document.getElementById("recentSelect");
 // search and location buttons 
 const searchBtn = document.getElementById("searchBtn");
 const locationBtn = document.getElementById("locationBtn");
 // result 
-const result = document.getElementById("result");
+const resultDiv = document.getElementById("result");
 const form = document.querySelector("form");
 const mainSection = document.querySelector("section");
 const body = document.querySelector("body");
@@ -35,17 +35,17 @@ locationBtn.addEventListener("click",() => {
     navigator.geolocation.getCurrentPosition(
     (pos) => {
         const {latitude , longitude} = pos.coords;
-        fetchWeatherByLoaction( latitude , longitude);
+        fetchWeatherByLocation( latitude , longitude);
     },
     () => {
-        alert("uable to get your loaction");
+        alert("unable to get your loaction");
     }
     );    
 });
 
 
-recentSearches.addEventListener("change", () =>{
-    const selectedCity = recentSearches.value;
+recentSelect.addEventListener("change", () =>{
+    const selectedCity = recentSelect.value;
     if(selectedCity){
         cityInput.value =selectedCity;
         fetchWeatherByCity(selectedCity);
@@ -61,7 +61,7 @@ async function fetchWeatherByCity(city) {
     // URL for fetching Current Weather //
     const currentURL = `${CURRENT_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
     // URL for fetching FOrecast Weather //
-    const forecastURL = `${FORECAST_URL}?q=${encodeURIComponent(ciyt)}&appid=${API_KEY}&units=metric`;
+    const forecastURL = `${FORECAST_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
     
     const [currentRES , forecastRES] = await Promise.all([
         fetch(currentURL),
@@ -88,9 +88,9 @@ async function fetchWeatherByCity(city) {
 async function fetchWeatherByLocation(lat , lon) {
     try {
     // URL for fetching Current Weather using coords //
-     const currentUrl = `${CURRENT_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+     const currentURL = `${CURRENT_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
     // URL for fetching Forecast Weather using Coords //
-    const forecastUrl = `${FORECAST_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+    const forecastURL = `${FORECAST_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
     
     const [currentRES , forecastRES] = await Promise.all([
         fetch(currentURL),
@@ -244,3 +244,62 @@ function showError(message) {
     <p class="mt-4 text-gray-600">${message}</p>
   `;
 }
+
+// function for loading recent cities from localstorage 
+function loadRecentCities() {
+  const saved = localStorage.getItem(RECENT_KEY);
+  let cities = [];
+  if (saved) {
+    try {
+      cities = JSON.parse(saved);
+    } catch {
+      cities = [];
+    }
+  }
+  updateRecentDropdown(cities);
+}
+
+// function for addig recent cities to localstorage 
+
+function addRecentCity(city) {
+  const saved = localStorage.getItem(RECENT_KEY);
+  let cities = saved ? JSON.parse(saved) : [];
+
+  const exists = cities.some(
+    (c) => c.toLowerCase() === city.toLowerCase()
+  );
+  if (!exists) {
+    cities.unshift(city);
+    if (cities.length > MAX_RECENT) {
+      cities = cities.slice(0, MAX_RECENT);
+    }
+    localStorage.setItem(RECENT_KEY, JSON.stringify(cities));
+    updateRecentDropdown(cities);
+  }
+}
+
+// function for updation recent cities dropdown
+function updateRecentDropdown(cities) {
+  recentSelect.innerHTML = "";
+
+  if (!cities || cities.length === 0) {
+    recentSelect.classList.add("hidden");
+    return;
+  }
+
+  recentSelect.classList.remove("hidden");
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select recent city";
+  recentSelect.appendChild(placeholder);
+
+  cities.forEach((city) => {
+    const opt = document.createElement("option");
+    opt.value = city;
+    opt.textContent = city;
+    recentSelect.appendChild(opt);
+  });
+}
+ 
+loadRecentCities();
